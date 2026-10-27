@@ -1,0 +1,99 @@
+@model NewApplicationViewModel
+@{
+    ViewData["Title"] = "New Application";
+    var applicationTypes = ViewBag.ApplicationTypes as string[] ?? Array.Empty<string>();
+    var fieldErrors = ViewData.ModelState
+        .Where(item => item.Value?.Errors.Count > 0)
+        .ToList();
+}
+
+<h1>New Application</h1>
+<p>Complete the required fields to submit an application.</p>
+
+@if (fieldErrors.Count > 0)
+{
+    <div id="error-summary" class="alert alert-danger" role="alert" tabindex="-1" data-error-summary>
+        <h2 class="h5" id="error-summary-heading">There is a problem with your submission</h2>
+        <ul class="mb-0">
+            @foreach (var entry in fieldErrors)
+            {
+                foreach (var error in entry.Value!.Errors)
+                {
+                    <li>
+                        @if (!string.IsNullOrWhiteSpace(entry.Key))
+                        {
+                            <a href="#@entry.Key">@error.ErrorMessage</a>
+                        }
+                        else
+                        {
+                            @error.ErrorMessage
+                        }
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+}
+
+<form asp-action="Create" method="post">
+    <div class="row g-3">
+        <div class="col-12 col-md-6">
+            <label asp-for="FirstName" class="form-label"></label>
+            <input asp-for="FirstName" class="form-control" autocomplete="given-name"
+                   aria-describedby="FirstName-error"
+                   aria-invalid="@(ViewData.ModelState["FirstName"]?.Errors.Count > 0 ? "true" : null)" />
+            <span asp-validation-for="FirstName" id="FirstName-error" class="validation-message"></span>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label asp-for="LastName" class="form-label"></label>
+            <input asp-for="LastName" class="form-control" autocomplete="family-name"
+                   aria-describedby="LastName-error"
+                   aria-invalid="@(ViewData.ModelState["LastName"]?.Errors.Count > 0 ? "true" : null)" />
+            <span asp-validation-for="LastName" id="LastName-error" class="validation-message"></span>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" autocomplete="email"
+                   aria-describedby="Email-error"
+                   aria-invalid="@(ViewData.ModelState["Email"]?.Errors.Count > 0 ? "true" : null)" />
+            <span asp-validation-for="Email" id="Email-error" class="validation-message"></span>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label asp-for="PhoneNumber" class="form-label"></label>
+            <input asp-for="PhoneNumber" type="tel" class="form-control" autocomplete="tel"
+                   aria-describedby="PhoneNumber-error"
+                   aria-invalid="@(ViewData.ModelState["PhoneNumber"]?.Errors.Count > 0 ? "true" : null)" />
+            <span asp-validation-for="PhoneNumber" id="PhoneNumber-error" class="validation-message"></span>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label asp-for="ApplicationType" class="form-label"></label>
+            <select asp-for="ApplicationType" class="form-select"
+                    aria-describedby="ApplicationType-error"
+                    aria-invalid="@(ViewData.ModelState["ApplicationType"]?.Errors.Count > 0 ? "true" : null)">
+                <option value="">Select an application type</option>
+                @foreach (var applicationType in applicationTypes)
+                {
+                    <option value="@applicationType">@applicationType</option>
+                }
+            </select>
+            <span asp-validation-for="ApplicationType" id="ApplicationType-error" class="validation-message"></span>
+        </div>
+
+        <div class="col-12">
+            <label asp-for="Comments" class="form-label"></label>
+            <textarea asp-for="Comments" class="form-control" rows="4"
+                      aria-describedby="Comments-error"
+                      aria-invalid="@(ViewData.ModelState["Comments"]?.Errors.Count > 0 ? "true" : null)"></textarea>
+            <span asp-validation-for="Comments" id="Comments-error" class="validation-message"></span>
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex flex-wrap gap-2">
+        <button type="submit" class="btn btn-primary">Submit application</button>
+        <a class="btn btn-link" asp-action="Index">Back to applications</a>
+    </div>
+</form>
